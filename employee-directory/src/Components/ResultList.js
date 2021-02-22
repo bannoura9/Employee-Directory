@@ -1,10 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useTable, useSortBy } from "react-table-6";
-import "./Result.css"
+import "./Result.css";
 
 // import "./result.css"
 
 function ResultList(props) {
+  const [ascOrder, setAscOrder] = useState(true);
+  const [list, setList] = useState([...props.results]);
+  useEffect(() => {
+    console.log("render");
+    setList(props.results);
+  }, [ascOrder, props.results, list]);
+  let compare = (o1, o2) => {
+    if (ascOrder) {
+      console.log("ascending");
+      if (o1.name.last > o2.name.last) {
+        return -1;
+      } else if (o1.name.last < o2.name.last) {
+        return 1;
+      }
+    } else {
+      console.log("descending");
+      if (o1.name.last < o2.name.last) {
+        return 1;
+      } else if (o2.name.last < o1.name.last) {
+        return -1;
+      }
+    }
+    return 0;
+  };
   return (
     <div
       style={{
@@ -20,7 +44,17 @@ function ResultList(props) {
               <button>Image</button>
             </th>
             <th onClick={() => props.nameArray()}>
-              <button onClick={() => props.sortBy("name.last")}>Name</button>
+              <button
+                onClick={() => {
+                  let tempList = [...list];
+                  tempList.sort(compare);
+                  setList([...tempList]);
+                  // props.results.sort(compare);
+                  setAscOrder((order) => !order);
+                }}
+              >
+                Name
+              </button>
             </th>
             <th>
               <button>Phone</button>
@@ -34,8 +68,8 @@ function ResultList(props) {
           </tr>
         </thead>
         <tbody>
-          {props.results.map(({ name, phone, email, dob, login, picture }) => {
-            if (name.last.toLowerCase().includes(props.search)) {
+          {list.map(({ name, phone, email, dob, login, picture }) => {
+            if (name.last.toLowerCase().includes(props.search.toLowerCase())) {
               return (
                 <tr className="list-group-item" key={login.uuid}>
                   <td>
