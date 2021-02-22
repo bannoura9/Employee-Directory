@@ -2,17 +2,15 @@ import React, { Component } from "react";
 import API from "../utils/API";
 import SearchForm from "./SearchForm.js";
 import ResultList from "./ResultList.js";
-import Title from "./Title"
+import Title from "./Title";
 
 class GenerateList extends React.Component {
   state = {
     search: "",
     results: [],
-    order: "descend",
-    columnToSort: '',
-    sortDirection: 'desc',
+    order: "ascend",
+    columnToSort: "",
   };
-
 
   apiCall = () => {
     API.search()
@@ -33,15 +31,19 @@ class GenerateList extends React.Component {
   };
 
   nameArray = () => {
-    const sorted = [...this.state.results].sort((a, b) =>
-      a.name.last > b.name.last ? 1 : -1
-    );
+    const sorted = [...this.state.results].sort((a, b) => {
+      if (this.state.order === "ascend") {
+        return a.name.last > b.name.last ? 1 : -1;
+      } else {
+        return a.name.last < b.name.last ? 1 : -1;
+      }
+    });
     this.setState({
       ...this.state,
       results: sorted,
+      order: this.state.order === "descend" ? "ascend" : "descend",
     });
   };
-
   render() {
     return (
       <>
@@ -55,7 +57,7 @@ class GenerateList extends React.Component {
             results={this.state.results}
             search={this.state.search}
             nameArray={this.nameArray}
-            order={this.state.order}
+            // order={this.state.order}
           />
         </div>
       </>
